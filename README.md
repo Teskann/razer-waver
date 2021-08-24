@@ -1,6 +1,6 @@
 # Razer Waver :ocean:
 
-Generate a customizable RGB wave effect for your Razer keyboard on Linux !
+Generate a customizable RGB wave effect for your Razer keyboard on Linux ! 🌈
 
 ## Table of Contents
 
@@ -128,6 +128,6 @@ Python             | `3.8.10`
 polychromatic      | `0.7.0`
 Qt                 | `5.14.1`
 
-Hardware | Model
+Hardware | Device
 ---------|----------------
 Keyboard | Razer Ornata V2
