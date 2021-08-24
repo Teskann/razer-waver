@@ -1,0 +1,72 @@
+import json
+import colorsys
+import os
+import argparse
+
+parser = argparse.ArgumentParser(description="Generate an RGB wave effect for polychromatic.")
+parser.add_argument("-d", "--duration", help="Wave period in seconds. Default is 5.", default="5")
+parser.add_argument("-D", "--direction", help="Wave direction. `LR` for right to left, `RL` for left to right. Default is `LR`", default='LR')
+parser.add_argument("--fps", help="Frames per seconds of the wave. Defaults to 24.", default='24')
+parser.add_argument("-c", "--columns", help="Number of columns in the keyboard. Default is 22.", default="22")
+parser.add_argument("-r", "--rows", help="Number of columns in the keyboard. Default is 6.", default="6")
+parser.add_argument("-o", "--output", help="Output file path. Default is `~/.config/polychromatic/effects/wave.json`", default="~/.config/polychromatic/effects/wave.json")
+
+args = parser.parse_args()
+direction = args.direction
+cols = int(args.columns)
+rows = int(args.rows)
+duration = float(args.duration)  # seconds
+fps = int(args.fps)
+name = args.output.split("/")[-1].split(".")[0].title()
+frames = []
+
+data = {"name": name,
+        "type": 3,
+        "author": "Teskann",
+        "author_url": "https://github.com/Teskann/razer-waver",
+        "icon": "img/options/wave.svg",
+        "summary": "",
+        "map_device": "Razer Ornata V2",
+        "map_device_icon": "keyboard",
+        "map_graphic": "blackwidow_m_keys_en_GB.svg",
+        "map_cols": cols,
+        "map_rows": rows,
+        "save_format": 8,
+        "revision": 1,
+        "fps": fps,
+        "loop": True,
+        "frames": frames
+        }
+
+nb_frames = int(duration * fps)
+delta_hue_frames = 1 / nb_frames
+for i_frame in range(nb_frames):
+    frames.append({})
+    delta_hue_col = 1 / cols
+    for i_col in range(cols):
+        hue = (i_frame * delta_hue_frames + i_col * delta_hue_col) % 1
+        rgb = [int(255 * c) for c in colorsys.hsv_to_rgb(hue, 1, 1)]
+        hex_color = "#{:02x}{:02x}{:02x}".format(*rgb)
+        row_values = {}
+        for i_rows in range(rows):
+            row_values[str(i_rows)] = hex_color  # Constant across rows
+        frames[-1][str(i_col)] = row_values
+
+if direction == 'LR':
+    data["frames"] = frames[::-1]
+
+save_path = os.path.expanduser(args.output)
+if os.path.exists(save_path):
+    ans = input(f"The file {save_path} already exists. Do you want to overwrite it ? (y/[n]) ")
+    if ans.lower() != 'y':
+        print("Aborting ...")
+        exit(-1)
+try:
+    with open(save_path, 'w') as f:
+        f.write(json.dumps(data, indent=4))
+    print("Wave effect file successfully created ! Open polychromatic to apply it on your keyboard !")
+except FileNotFoundError as e:
+    print(f"No such file or directory: '{save_path}'. Be sure you have "
+          f"installed polychromatic ! If you have installed it, run it and "
+          f"retry. You can also use --output to save your file elsewhere.")
+    exit(-1)
