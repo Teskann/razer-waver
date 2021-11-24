@@ -65,7 +65,8 @@ There you should see a new *Wave* effect. Click on it and click on *Play* !
 
 You can customize your wave using the following parameters :
 ```
-usage: create-wave.py [-h] [-d DURATION] [-D DIRECTION] [--fps FPS] [-c COLUMNS] [-r ROWS] [-o OUTPUT]
+usage: create-wave.py [-h] [-d DURATION] [-D DIRECTION] [--fps FPS]
+                      [-c COLUMNS] [-r ROWS] [--device DEVICE] [-o OUTPUT]
 
 Generate an RGB wave effect for polychromatic.
 
@@ -74,13 +75,24 @@ optional arguments:
   -d DURATION, --duration DURATION
                         Wave period in seconds. Default is 5.
   -D DIRECTION, --direction DIRECTION
-                        Wave direction. `LR` for right to left, `RL` for left to right. Default is `LR`
+                        Wave direction. `LR` for left to right, `RL` for right
+                        to left. Default is `LR`
   --fps FPS             Frames per seconds of the wave. Defaults to 24.
   -c COLUMNS, --columns COLUMNS
                         Number of columns in the keyboard. Default is 22.
-  -r ROWS, --rows ROWS  Number of columns in the keyboard. Default is 6.
+  -r ROWS, --rows ROWS  Number of rowq in the keyboard. Default is 6.
+  --device DEVICE       Name of the Razer device. Defaults to `Razer Ornata
+                        V2`. Please, enter the real name of the device, as it
+                        shows up in Polychromatic. You will probably need to
+                        fix the number of rows and columns so they fit your
+                        device, using `-r` and `-c` parameters. To know how
+                        many columns and rows your device has, you can create
+                        a dummy Polychromatic effect and check how many
+                        rows/columns appear in the matrix. Underglow should be
+                        supported with the correct values.
   -o OUTPUT, --output OUTPUT
-                        Output file path. Default is `~/.config/polychromatic/effects/wave.json`
+                        Output file path. Default is
+                        `~/.config/polychromatic/effects/wave.json`
 ```
 
 ### Examples
@@ -125,9 +137,10 @@ Software           | Version
 -------------------|---------------
 Linux Distribution | `Ubuntu 20.04`
 Python             | `3.8.10`
-polychromatic      | `0.7.0`
+polychromatic      | `0.7.0`, `0.7.2`
 Qt                 | `5.14.1`
 
 Hardware | Device
 ---------|----------------
 Keyboard | Razer Ornata V2
+Keyboard | Razer Huntsman Elite (9 rows needed to support underglow)

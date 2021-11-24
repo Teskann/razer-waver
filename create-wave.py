@@ -5,10 +5,15 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Generate an RGB wave effect for polychromatic.")
 parser.add_argument("-d", "--duration", help="Wave period in seconds. Default is 5.", default="5")
-parser.add_argument("-D", "--direction", help="Wave direction. `LR` for right to left, `RL` for left to right. Default is `LR`", default='LR')
+parser.add_argument("-D", "--direction", help="Wave direction. `LR` for left to right, `RL` for right to left. Default is `LR`", default='LR')
 parser.add_argument("--fps", help="Frames per seconds of the wave. Defaults to 24.", default='24')
 parser.add_argument("-c", "--columns", help="Number of columns in the keyboard. Default is 22.", default="22")
-parser.add_argument("-r", "--rows", help="Number of columns in the keyboard. Default is 6.", default="6")
+parser.add_argument("-r", "--rows", help="Number of rows in the keyboard. Default is 6.", default="6")
+parser.add_argument("--device", help="Name of the Razer device. Defaults to `Razer Ornata V2`. Please, enter the real name of the device, "
+                                     "as it shows up in Polychromatic. You will probably need to fix the number of rows and columns"
+                                     " so they fit your device, using `-r` and `-c` parameters. To know how many columns and rows your "
+                                     "device has, you can create a dummy Polychromatic effect and check how many rows/columns appear in the "
+                                     "matrix. Underglow should be supported with the correct values.", default="Razer Ornata V2")
 parser.add_argument("-o", "--output", help="Output file path. Default is `~/.config/polychromatic/effects/wave.json`", default="~/.config/polychromatic/effects/wave.json")
 
 args = parser.parse_args()
@@ -16,6 +21,7 @@ direction = args.direction
 cols = int(args.columns)
 rows = int(args.rows)
 duration = float(args.duration)  # seconds
+device = args.device
 fps = int(args.fps)
 name = args.output.split("/")[-1].split(".")[0].title()
 frames = []
@@ -26,7 +32,7 @@ data = {"name": name,
         "author_url": "https://github.com/Teskann/razer-waver",
         "icon": "img/options/wave.svg",
         "summary": "",
-        "map_device": "Razer Ornata V2",
+        "map_device": device,
         "map_device_icon": "keyboard",
         "map_graphic": "blackwidow_m_keys_en_GB.svg",
         "map_cols": cols,
@@ -67,6 +73,6 @@ try:
     print("Wave effect file successfully created ! Open polychromatic to apply it on your keyboard !")
 except FileNotFoundError as e:
     print(f"No such file or directory: '{save_path}'. Be sure you have "
-          f"installed polychromatic ! If you have installed it, run it and "
+          f"installed polychromatic ! If you have installed it, launch it and "
           f"retry. You can also use --output to save your file elsewhere.")
     exit(-1)
