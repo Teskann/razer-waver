@@ -54,9 +54,6 @@ data = {"name": name,
 nb_frames = int(duration * fps)
 delta_hue_frames = 1 / nb_frames
 
-# hues = np.sin(np.linspace(0, 1, nb_frames) * np.pi / 2).tolist()
-# hues = ((np.sin((np.power(np.linspace(0, 1, nb_frames) - 1, 3) + 1) * np.pi + 3 * np.pi / 2) + 1) / 2).tolist()
-# hues = ((np.sin((-np.power(np.linspace(0, 1, nb_frames) - 1, 2) + 1) * np.pi + 3 * np.pi / 2) + 1) / 2).tolist()
 hues = ((np.sin(np.linspace(0, 1, nb_frames) * np.pi + 3 * np.pi / 2) + 1) / 2).tolist()
 
 for i_frame in range(nb_frames):
@@ -66,9 +63,7 @@ for i_frame in range(nb_frames):
     if vertical:  # color is constant across columns
         delta_hue_row = 1 / rows if delta is None else delta
         for i_row in range(rows):
-            # hue = min(i_frame * delta_hue_frames + i_row * delta_hue_row, 1)
             hue = (hues[i_frame] + i_row * delta_hue_row) % 1
-            # print(hue)
             rgb = [int(255 * c) for c in colorsys.hsv_to_rgb(hue, 1, 1)]
             hex_color = "#{:02x}{:02x}{:02x}".format(*rgb)
             row_key = str(i_row)
@@ -81,8 +76,6 @@ for i_frame in range(nb_frames):
     else:  # color is constant across rows
         delta_hue_col = 1 / cols if delta is None else delta
         for i_col in range(cols):
-            # hue = (i_frame * delta_hue_frames + i_col * delta_hue_col) % 1
-            # hue = min(i_frame * delta_hue_frames + i_row * delta_hue_row, 1)
             hue = (hues[i_frame] + i_col * delta_hue_col) % 1
             rgb = [int(255 * c) for c in colorsys.hsv_to_rgb(hue, 1, 1)]
             hex_color = "#{:02x}{:02x}{:02x}".format(*rgb)
