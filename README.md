@@ -115,6 +115,12 @@ Generate a 1 second wave at 60 FPS:
 python create-wave.py -d 1 --fps 60
 ```
 
+Generate a 3 second vertical wave with hue difference of 0.05 between adjacent rows for `Razer Tartarus V2`:
+
+```
+python create-wave.py -d 3 -D RL -r 4 -c 6 --device 'Razer Tartarus V2' -v --delta 0.05;
+```
+
 ## Technical details
 
 The wave is a [hue](https://en.wikipedia.org/wiki/Hue) periodic rotation with
