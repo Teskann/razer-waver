@@ -19,6 +19,7 @@ parser.add_argument("-o", "--output", help="Output file path. Default is `~/.con
 parser.add_argument("-v", "--vertical", help="Make wave which moves vertically instead of wave which moves horizontally (which is default)", action="store_true")
 parser.add_argument("--delta", help="Delta hue between adjacent cols (if the wave moves horizontally) or between rows (if the wave moves vertically)", default = None)
 parser.add_argument("-p", "--pretend", help="Generate frames, but don't save", action="store_true")
+parser.add_argument("--offset", help = 'Add offset in the beginning and at the end of hue spectrum', default = 5)
 
 args = parser.parse_args()
 direction = args.direction
@@ -32,6 +33,7 @@ pretend = args.pretend
 name = args.output.split("/")[-1].split(".")[0].title()
 delta = None if args.delta is None else float(args.delta)
 frames = []
+offset = int(args.offset)
 
 data = {"name": name,
         "type": 3,
@@ -56,7 +58,10 @@ delta_hue_frames = 1 / nb_frames
 
 hues = ((np.sin(np.linspace(0, 1, nb_frames) * np.pi + 3 * np.pi / 2) + 1) / 2).tolist()
 
-for i_frame in range(nb_frames):
+if offset > 0:
+    hues = hues[offset:-offset]
+
+for i_frame in range(nb_frames - offset * 2):
     current_frame = {}
     frames.append(current_frame)
 
