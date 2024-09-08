@@ -2,6 +2,7 @@ import json
 import colorsys
 import os
 import argparse
+import numpy as np
 
 parser = argparse.ArgumentParser(description="Generate an RGB wave effect for polychromatic.")
 parser.add_argument("-d", "--duration", help="Wave period in seconds. Default is 5.", default="5")
@@ -15,6 +16,10 @@ parser.add_argument("--device", help="Name of the Razer device. Defaults to `Raz
                                      "device has, you can create a dummy Polychromatic effect and check how many rows/columns appear in the "
                                      "matrix. Underglow should be supported with the correct values.", default="Razer Ornata V2")
 parser.add_argument("-o", "--output", help="Output file path. Default is `~/.config/polychromatic/effects/wave.json`", default="~/.config/polychromatic/effects/wave.json")
+parser.add_argument("-v", "--vertical", help="Make wave which moves vertically instead of wave which moves horizontally (which is default)", action="store_true")
+parser.add_argument("--delta", help="Delta hue between adjacent cols (if the wave moves horizontally) or between rows (if the wave moves vertically)", default = None)
+parser.add_argument("-p", "--pretend", help="Generate frames, but don't save", action="store_true")
+parser.add_argument("--offset", help = 'Add offset in the beginning and at the end of hue spectrum', default = 5)
 
 args = parser.parse_args()
 direction = args.direction
@@ -23,8 +28,12 @@ rows = int(args.rows)
 duration = float(args.duration)  # seconds
 device = args.device
 fps = int(args.fps)
+vertical = args.vertical
+pretend = args.pretend
 name = args.output.split("/")[-1].split(".")[0].title()
+delta = None if args.delta is None else float(args.delta)
 frames = []
+offset = int(args.offset)
 
 data = {"name": name,
         "type": 3,
@@ -46,20 +55,45 @@ data = {"name": name,
 
 nb_frames = int(duration * fps)
 delta_hue_frames = 1 / nb_frames
-for i_frame in range(nb_frames):
-    frames.append({})
-    delta_hue_col = 1 / cols
-    for i_col in range(cols):
-        hue = (i_frame * delta_hue_frames + i_col * delta_hue_col) % 1
-        rgb = [int(255 * c) for c in colorsys.hsv_to_rgb(hue, 1, 1)]
-        hex_color = "#{:02x}{:02x}{:02x}".format(*rgb)
-        row_values = {}
-        for i_rows in range(rows):
-            row_values[str(i_rows)] = hex_color  # Constant across rows
-        frames[-1][str(i_col)] = row_values
+
+hues = ((np.sin(np.linspace(0, 1, nb_frames) * np.pi + 3 * np.pi / 2) + 1) / 2).tolist()
+
+if offset > 0:
+    hues = hues[offset:-offset]
+
+for i_frame in range(nb_frames - offset * 2):
+    current_frame = {}
+    frames.append(current_frame)
+
+    if vertical:  # color is constant across columns
+        delta_hue_row = 1 / rows if delta is None else delta
+        for i_row in range(rows):
+            hue = (hues[i_frame] + i_row * delta_hue_row) % 1
+            rgb = [int(255 * c) for c in colorsys.hsv_to_rgb(hue, 1, 1)]
+            hex_color = "#{:02x}{:02x}{:02x}".format(*rgb)
+            row_key = str(i_row)
+            for i_cols in range(cols):
+                col_key = str(i_cols)
+                if col_key in current_frame:
+                    current_frame[col_key][row_key] = hex_color
+                else:
+                    current_frame[col_key] = {row_key: hex_color}
+    else:  # color is constant across rows
+        delta_hue_col = 1 / cols if delta is None else delta
+        for i_col in range(cols):
+            hue = (hues[i_frame] + i_col * delta_hue_col) % 1
+            rgb = [int(255 * c) for c in colorsys.hsv_to_rgb(hue, 1, 1)]
+            hex_color = "#{:02x}{:02x}{:02x}".format(*rgb)
+            row_values = {}
+            for i_rows in range(rows):
+                row_values[str(i_rows)] = hex_color  # Constant across rows
+            frames[-1][str(i_col)] = row_values
 
 if direction == 'LR':
     data["frames"] = frames[::-1]
+
+if pretend:
+    exit(0)
 
 save_path = os.path.expanduser(args.output)
 if os.path.exists(save_path):
