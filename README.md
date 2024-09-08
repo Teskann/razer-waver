@@ -49,6 +49,8 @@ cd razer-waver
 python create-wave.py  # This creates the default wave effect. Click below to customize it
 ```
 
+> NB: on some old systems, you might need to call `python3` instead of `python`
+
 [I want to customize the wave !](#customize)
 
 ### Apply the wave effect
@@ -80,7 +82,7 @@ optional arguments:
   --fps FPS             Frames per seconds of the wave. Defaults to 24.
   -c COLUMNS, --columns COLUMNS
                         Number of columns in the keyboard. Default is 22.
-  -r ROWS, --rows ROWS  Number of rowq in the keyboard. Default is 6.
+  -r ROWS, --rows ROWS  Number of rows in the keyboard. Default is 6.
   --device DEVICE       Name of the Razer device. Defaults to `Razer Ornata
                         V2`. Please, enter the real name of the device, as it
                         shows up in Polychromatic. You will probably need to
@@ -89,7 +91,9 @@ optional arguments:
                         many columns and rows your device has, you can create
                         a dummy Polychromatic effect and check how many
                         rows/columns appear in the matrix. Underglow should be
-                        supported with the correct values.
+                        supported with the correct values. If your device name
+                        contains whitespaces, don't forget to add quotes
+                        around it.
   -o OUTPUT, --output OUTPUT
                         Output file path. Default is
                         `~/.config/polychromatic/effects/wave.json`
@@ -144,3 +148,4 @@ Hardware | Device
 ---------|----------------
 Keyboard | Razer Ornata V2
 Keyboard | Razer Huntsman Elite (9 rows needed to support underglow)
+Keyboard | [Razer BlackWidow V4](https://github.com/Teskann/razer-waver/issues/3#issue-2483434669)
